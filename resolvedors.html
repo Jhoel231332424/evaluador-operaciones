@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROBLEMA RESUELTO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">PROBLEMA RESUELTO</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="index.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Registrarse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="inicioSesion.html">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-5">
+        <div class="container text-center">
+            <br>
+            <br>
+            <div class="container text-center">
+                <h2 class="fw-light">Como se evalua:</h2>
+                <br>
+                <p class="fas fa-gem me-3"> Paso 1: Ingresar la expresión aritmética infija</p>
+                <p class="fas fa-gem me-3"> Paso 2: Hacer clic en el botón "Evaluar"</p>
+                <p class="fas fa-gem me-3"> Paso 3: Conversión de la expresión infija a postfija</p>
+                <p class="fas fa-gem me-3"> Paso 4: Mostrar expresión postfija y operaciones intermedias</p>
+                <p class="fas fa-gem me-3"> Paso 5: Evaluación de la expresión postfija:</p>
+                <p class="fas fa-gem me-3"> Paso 6: Mostrar resultado final</p>
+            </div>
+            <br>
+            <h1 class="fw-light">Ingrese su expresión infija</h1>
+            <br>
+
+            <br>
+
+            <!-- Añadido el evento onclick para limpiar el contenido al hacer clic -->
+            <div>
+                <input class="col-5 text-center" type="text" id="expresion" placeholder="Ingrese la expresión" readonly>
+            </div>
+        </div>
+
+        <br>
+    </section>
+
+    <div class="container text-center">
+        <button onclick="agregarCaracter('1')">1</button>
+        <button onclick="agregarCaracter('2')">2</button>
+        <button onclick="agregarCaracter('3')">3</button>
+        <button onclick="agregarCaracter('+')">+</button>
+    </div>
+    <div class="container text-center">
+        <button onclick="agregarCaracter('4')">4</button>
+        <button onclick="agregarCaracter('5')">5</button>
+        <button onclick="agregarCaracter('6')">6</button>
+        <button onclick="agregarCaracter('-')">-</button>
+    </div>
+    <div class="container text-center">
+        <button onclick="agregarCaracter('7')">7</button>
+        <button onclick="agregarCaracter('8')">8</button>
+        <button onclick="agregarCaracter('9')">9</button>
+        <button onclick="agregarCaracter('*')">*</button>
+    </div>
+    <div class="container text-center">
+        <button onclick="agregarCaracter('0')">0</button>
+        <button onclick="agregarCaracter('.')">.</button>
+        <button onclick="borrar()">C</button>
+        <br>
+        <br>
+
+        <div class="container text-center">
+            <button type="button" onclick="evaluarExpresion()" class="btn btn-success btn-lg">Evaluar</button>
+            <div id="pasos-container"></div>
+            <div id="resultado-container"></div>
+        </div>
+
+
+        <script>
+            function agregarCaracter(caracter) {
+                document.getElementById('expresion').value += caracter;
+            }
+
+            function borrar() {
+                document.getElementById('expresion').value = "";
+            }
+
+            function evaluarExpresion() {
+                try {
+                    var expresionInfija = document.getElementById('expresion').value;
+                    var expresionPostfija = convertirInfijaAPostfija(expresionInfija);
+                    var resultado = evaluarPostfija(expresionPostfija);
+
+                    // Mostrar pasos intermedios
+                    var pasosHTML = "<strong>Pasos intermedios:</strong><br>Expresión postfija: " + expresionPostfija.join(" ") + "<br>";
+
+                    // Mostrar operaciones intermedias
+                    var stack = [];
+                    for (var i = 0; i < expresionPostfija.length; i++) {
+                        var operacion = expresionPostfija[i];
+
+                        if ("+-*/".indexOf(operacion) !== -1) {
+                            var operando2 = stack.pop();
+                            var operando1 = stack.pop();
+                            var resultadoOperacion = realizarOperacion(operando1, operando2, operacion);
+
+                            pasosHTML += `Operando: ${operando1} (${operando1 % 2 === 0 ? 'par' : 'impar'})<br>`;
+                            pasosHTML += `Operando: ${operando2} (${operando2 % 2 === 0 ? 'par' : 'impar'})<br>`;
+                            pasosHTML += `${operando1} ${operacion} ${operando2} = ${resultadoOperacion} (${resultadoOperacion % 2 === 0 ? 'par' : 'impar'})<br>`;
+
+                            stack.push(resultadoOperacion);
+                        } else {
+                            stack.push(parseFloat(operacion));
+                        }
+                    }
+
+                    // Mostrar resultado final
+                    pasosHTML += "<strong>Resultado final:</strong> " + resultado + " (" + (resultado % 2 === 0 ? 'par' : 'impar') + ")<br>";
+                    document.getElementById('pasos-container').innerHTML = pasosHTML;
+                    document.getElementById('resultado-container').innerHTML = "<strong>Resultado:</strong> " + resultado;
+                } catch (error) {
+                    alert("Expresión no válida");
+                }
+            }
+            function convertirInfijaAPostfija(expresionInfija) {
+                var operadores = "+-*/";
+                var stack = [];
+                var output = [];
+
+                for (var i = 0; i < expresionInfija.length; i++) {
+                    var caracter = expresionInfija[i];
+
+                    if (operadores.indexOf(caracter) !== -1) {
+                        while (stack.length > 0 && operadores.indexOf(stack[stack.length - 1]) >= operadores.indexOf(caracter)) {
+                            output.push(stack.pop());
+                        }
+                        stack.push(caracter);
+                    } else if (caracter === '(') {
+                        stack.push(caracter);
+                    } else if (caracter === ')') {
+                        while (stack.length > 0 && stack[stack.length - 1] !== '(') {
+                            output.push(stack.pop());
+                        }
+                        stack.pop(); // Sacar el paréntesis izquierdo
+                    } else {
+                        // Es un número o punto decimal
+                        output.push(caracter);
+                    }
+                }
+
+                while (stack.length > 0) {
+                    output.push(stack.pop());
+                }
+
+                return output;
+            }
+
+            function evaluarPostfija(expresionPostfija) {
+                var stack = [];
+
+                for (var i = 0; i < expresionPostfija.length; i++) {
+                    var caracter = expresionPostfija[i];
+
+                    if ("+-*/".indexOf(caracter) !== -1) {
+                        var operando2 = stack.pop();
+                        var operando1 = stack.pop();
+                        var resultado = realizarOperacion(operando1, operando2, caracter);
+                        stack.push(resultado);
+                    } else {
+                        stack.push(parseFloat(caracter));
+                    }
+                }
+
+                return stack.pop();
+            }
+
+            function realizarOperacion(operando1, operando2, operador) {
+                switch (operador) {
+                    case '+':
+                        return operando1 + operando2;
+                    case '-':
+                        return operando1 - operando2;
+                    case '*':
+                        return operando1 * operando2;
+                    case '/':
+                        if (operando2 !== 0) {
+                            return operando1 / operando2;
+                        } else {
+                            throw new Error("División por cero");
+                        }
+                    default:
+                        throw new Error("Operador no válido");
+                }
+            }
+        </script>
+</body>
+<!-- Footer -->
+<footer class="text-center text-lg-start bg-body-tertiary text-muted">
+    <!-- Section: Social media -->
+    <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+        <!-- Left -->
+
+        <!-- Left -->
+
+        <!-- Right -->
+        <div>
+            <a href="" class="me-4 text-reset">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="" class="me-4 text-reset">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="" class="me-4 text-reset">
+                <i class="fab fa-google"></i>
+            </a>
+            <a href="" class="me-4 text-reset">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="" class="me-4 text-reset">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="" class="me-4 text-reset">
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        <!-- Right -->
+    </section>
+    <!-- Section: Social media -->
+
+    <!-- Section: Links  -->
+    <section class="">
+        <div class="container text-center text-md-start mt-5">
+            <!-- Grid row -->
+            <div class="row mt-3">
+                <!-- Grid column -->
+                <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                    <!-- Content -->
+                    <h6 class="text-uppercase fw-bold mb-4">
+                        <i class="fas fa-gem me-3"></i>PROBLEMA RESUELTO
+                    </h6>
+                    <p>
+                        El operador de expresiones que resuelve cualquier problema, además de mostrarte como
+                        se realizo las operaciones para una facil comprensión.
+                    </p>
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                    <!-- Links -->
+                    <h6 class="text-uppercase fw-bold mb-4">
+                        Servicio
+                    </h6>
+                    <p>
+                        <a href="#!" class="text-reset">Resolvedor de expresiones</a>
+                    </p>
+                    <!--<p>
+                        <a href="#!" class="text-reset">React</a>
+                    </p>
+                    <p>
+                        <a href="#!" class="text-reset">Vue</a>
+                    </p>
+                    <p>
+                        <a href="#!" class="text-reset">Laravel</a>
+                    </p>
+                    -->
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <!-- <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                     Links 
+                    <h6 class="text-uppercase fw-bold mb-4">
+                        Useful links
+                    </h6>
+                    <p>
+                        <a href="#!" class="text-reset">Pricing</a>
+                    </p>
+                    <p>
+                        <a href="#!" class="text-reset">Settings</a>
+                    </p>
+                    <p>
+                        <a href="#!" class="text-reset">Orders</a>
+                    </p>
+                    <p>
+                        <a href="#!" class="text-reset">Help</a>
+                    </p>
+                </div> -->
+
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                    <!-- Links -->
+                    <h6 class="text-uppercase fw-bold mb-4">Contacto</h6>
+                    <p><i class="fas fa-home me-3"></i> Cochabamba, Av. América #158, BO</p>
+                    <p>
+                        <i class="fas fa-envelope me-3"></i>
+                        problema_resuelve@gmail.com
+                    </p>
+                    <p><i class="fas fa-phone me-3"></i> + 591 65978461</p>
+                    <p><i class="fas fa-print me-3"></i> + 591 78946781</p>
+                </div>
+                <!-- Grid column -->
+            </div>
+            <!-- Grid row -->
+        </div>
+    </section>
+    <!-- Section: Links  -->
+
+    <!-- Copyright -->
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+        © 2023 Copyright:
+        <a class="text-reset fw-bold" href="https://mdbootstrap.com/">problema_resuelve.com</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+</html>
